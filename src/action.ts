@@ -16,7 +16,20 @@ async function run(): Promise<void> {
     const whatNewsZh = core.getInput('what-news-zh', { required: true });
     // 建立臨時私鑰檔案 (從 base64 解碼)
     const tempKeyPath = path.join(process.cwd(), 'temp_private_key.p8');
-    const decodedPrivateKey = Buffer.from(privateKey, 'base64').toString('utf8');
+    let decodedPrivateKey: string;
+    
+    try {
+      decodedPrivateKey = Buffer.from(privateKey, 'base64').toString('utf8');
+    } catch (error) {
+      // 如果 base64 解碼失敗，假設已經是明文私鑰
+      decodedPrivateKey = privateKey;
+    }
+    
+    // 確保私鑰格式正確 (PKCS#8 格式)
+    if (!decodedPrivateKey.includes('-----BEGIN PRIVATE KEY-----')) {
+      throw new Error('私鑰必須是 PKCS#8 格式，應該包含 "-----BEGIN PRIVATE KEY-----" 標頭');
+    }
+    
     fs.writeFileSync(tempKeyPath, decodedPrivateKey);
 
     // 初始化 AppStoreSubmitter
