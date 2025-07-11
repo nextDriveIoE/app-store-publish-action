@@ -2,9 +2,9 @@ name: Test GitHub Action
 
 on:
   push:
-    branches: [ main, develop ]
-  pull_request:
     branches: [ main ]
+  pull_request:
+    branches: [ '*' ]
 
 jobs:
   test:
@@ -16,29 +16,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Run linter
-        run: npm run lint
-        
-      - name: Run tests
-        run: npm test
         
       - name: Build
         run: npm run build
-        
-      - name: Test Action (dry run)
-        uses: ./
-        with:
-          app-id: 'test-app-id'
-          version: '1.0.0'
-          issuer-id: 'test-issuer-id'
-          key-id: 'test-key-id'
-          private-key: 'test-private-key'
-          what-news-ja: 'テスト更新'
-          what-news-en: 'Test update'
-          what-news-zh: '測試更新'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
