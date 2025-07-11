@@ -1,0 +1,39 @@
+name: 'App Store Publish Action'
+description: 'Automated App Store Submission Action'
+branding:
+  icon: 'upload'
+  color: 'blue'
+
+inputs:
+  app-id:
+    description: 'App Store Connect APP ID'
+    required: true
+  version:
+    description: 'Version Number (e.g. "2.0.1303")'
+    required: true
+  issuer-id:
+    description: 'App Store Connect API Issuer ID'
+    required: true
+  key-id:
+    description: 'App Store Connect API Key ID'
+    required: true
+  private-key:
+    description: 'App Store Connect API Private Key (base64 encoded)'
+    required: true
+  what-news-ja:
+    description: 'Japanese Version Update Description'
+    required: true
+  what-news-en:
+    description: 'English Version Update Description'
+    required: true
+  what-news-zh:
+    description: 'Chinese Version Update Description'
+    required: true
+
+outputs:
+  result:
+    description: 'Execution Result'
+
+runs:
+  using: 'node20'
+  main: 'dist/action.js'

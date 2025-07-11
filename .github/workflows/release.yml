@@ -1,0 +1,63 @@
+name: Release GitHub Action
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build
+        run: npm run build
+        
+      - name: Package for distribution
+        run: npm run package
+        
+      - name: Commit built files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add dist/
+          git diff --staged --quiet || git commit -m "Add built files for release ${{ github.ref_name }}"
+          git push
+        
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ## 變更內容
+            - 自動化 App Store 送審
+            - 支援 TestFlight 版本查詢
+            - 多語言版本更新說明
+            
+            ## 使用方式
+            ```yaml
+            - uses: your-org/app-store-publish-sdk@${{ github.ref }}
+              with:
+                app-id: '${{ secrets.APP_ID }}'
+                version: '2.0.1303'
+                issuer-id: '${{ secrets.ISSUER_ID }}'
+                key-id: '${{ secrets.KEY_ID }}'
+                private-key: '${{ secrets.PRIVATE_KEY }}'
+                what-news-ja: 'バグ修正'
+                what-news-en: 'Bug fixes'
+                what-news-zh: '修復錯誤'
+            ```
+          draft: false
+          prerelease: false
