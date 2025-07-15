@@ -17,5 +17,11 @@ jobs:
         with:
           node-version: '20'
         
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.1
+      
       - name: Build
-        run: npm run build
+        run: |
+          pnpm install
+          pnpm build
